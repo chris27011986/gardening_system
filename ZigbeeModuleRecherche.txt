@@ -1,0 +1,36 @@
+###############################################################################
+# In diesem Textfile soll analysiert werden welcher Chip/SOC für das Garten-
+# projekt in Frage kommt.
+###############################################################################
+
+# Anforderungen Hardware:
+1. Ein-Chip-Lösung: SOC mit einem uC und den notwendigen RF-Baugruppen
+2. der uC muss einen Timer mit einstellbarer Taktquelle haben (Counter)
+3. Schlafzeiten von h wenn möglich 
+4. Energiespar Aspekte
+5. Inbetriebnahme durch Beschaltung auf PCB muss meinen geringen Erfahrungen
+	standhalten
+6. getrennter Programmer
+7. Preis sollte wenn möglich unter 5 Euro Stückpreis liegen
+
+# Anforderungen an die Software:
+1. Zigbee-Stack frei verfügbar
+2. Footprint des Chips vorhanden und in KiCAD importierbar
+
+###############################################################################
+# Vorläufiges Fazit
+###############################################################################
+xx.xx.xxxx: Preis: Mouser beginnt beim günstigsten Zigbee-Modul mit 10,11 Euro
+27.07.2017: Atmel bietet SoCs sowie Zigbee transeiver an. Die SoCs haben ihren scharm das ich mich weniger um die
+			Kommunikation einzelner Baugruppen kümmern muss. Preislich bekomme ich für etwa 8 Euro einen 
+			Controller (Cortex M0), mit Zigbee-Unterstützung sowie die RF-Komponenten. Einmalige Anschaffung der
+			Entwicklungsumgebung etwa 100 Euro. ATSAMR21E16A-MUT
+
+
+
+
+###############################################################################
+# Vorstellung verschiedener SOCs
+###############################################################################
+
+
