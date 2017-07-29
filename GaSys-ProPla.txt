@@ -1,0 +1,136 @@
+# hier sollen übersichtilich verschiedene Arbeitsstränge notiert werden.
+# dieses File wird nach der Erstellung über Dropbox verteilt/verändert.
+
+#######################################################################################################################
+## Übersicht ##########################################################################################################
+#######################################################################################################################
+GardeningSystem:
+1.	FeuchteSensor:
+#1.1	Aufbau, Leitungen angelötet >fertig
+1.2	Versigelung 
+
+2. 	BeagleBoneBlack
+#2.1	Python Skript welches eine DB auslesen kann, Pins lesen/schreiben kann, zyklisch ausgeführt wird, 
+#	dieses Skript interpretiert die von den FS erhaltenen Werte siehe 2.5
+#2.2	Mechanismus um Nutzerinformationen von der Website auf den Server zu bringen
+#2.3	Mechanismus um Informationen einer DB zu holen und grafisch aufzubereiten
+#2.4	mySQL server welcher eine History über ausgelesene Pins erstellt
+2.5	drahtlose Übertragung (Slave): Zigbee, Wlan, etc...
+2.6	Zyklisches triggern von Skripten
+
+3. 	MicroController
+3.1	drahtlose Übertragung (Master): Zigbee, Wlan, etc ...
+3.2 	soll vom DauerSchlafen zyklisch aufwachen können
+3.3	soll SensorTakt messen können (TimerSource ?) 
+3.4	Bedrahtung I/O
+3.5	Spannungsversorgung
+
+#######################################################################################################################
+## Details ############################################################################################################
+#######################################################################################################################
+1.2	Versiegelung durch mehrere Schichten Klarlack, evtl zusätzliche Folie - wurde gekauft, kann begonnen werden
+	eilt jedoch nicht. Alle aktuellen Aufgaben benötigen diese Versiegelung nicht!
+
+2.2	Wenn möglich hier auf Pyhton wechseln da wir hier ausschließlich String Operationen vornehmen
+	161224 > Das Skript steht und funktioniert als User - die Anbindung an den Server stellt sich als Hürde da.
+		Für das Handling von Informationen vom User an den Server über die html kann man mit "form" arbeiten,
+		diese Triggern/submitten ein XXX (zum Beispiel .asp) um die Info an den Server zu schicken.  
+	170107 > Das <form> Konstrukt kann auch py-Skripte triggern. Wie diese Informationen im Skript verarbeitet 
+		werden müssen muss noch gelernt werden	
+
+2.3	>>> Ist umgesetzt - siehe BBB /var/www/html/php_Tut.php
+
+2.4	mySQL soll (Hauptaufgabe) 1. von den Sensoren empfangene Daten einlesen und 2. für die html ausgelesen werden 
+	um eine Grafik zu erstellen
+	weiter (Nebenaufgabe) wäre es toll auch den verlauf der über die html angepassten Parameter darstellen zu 
+	können. 
+	Ich muss die Frage klären wie ich die DB organisiere:
+	=> Kann ich eine Tabelle mit zwei Spalten erstellen (Name: Value). Den Value dann immer wieder neu schreiben.
+		Wie bekomme ich einen Verlauf dieser Values erstellt? 
+		==> eine Tabelle pro Sensor, dann je den aktuellsten Parameter hinzufügen	
+
+	=> Das Anlegen der Tabellen muss dynamisch passieren - sobald Information eines Sensors erhalten werden,
+		wird initial eine Tabelle angelegt:
+		>>> Id = 1	neue Tabelle = Sensor_1
+		>>> Id = 2	neue Tabelle = Sensor_2
+		>>> Id = 1	updaten Sensor_1
+	>>> ist umgesetzt - siehe BBB ~/Desktop/gardeningSys/mysql_content/tutorial/mysql_tut_TEST.py
+
+2.5	suche fertiges BBB-Panel - fertige Beispiele/Anwendungen
+
+3.	Habe mich hier für einen Atmel Mini entschieden, er hat SPI und gewisse Timer. SPI benötige ich für 3.1 die Timer 
+	für 3.2 und 3.3. Diese Platine war eine der kleinsten mit knapp 6 Euro, ohne Programmer. Diesen habe ich extra
+	bestellt. Aktuell könte ich mir dieses Board sogar als Finale Plattform vorstellen
+
+3.1	Noch kein Know-How vorhanden - verwende als Grundlage ein fertiges Zigbee-Eval-Board?
+	ist es zielführend hier das Eval-Board zu überspringen und direkt nur uC und Beschaltung zu kaufen?
+	>>> abwägen => Kosten/Nutzen/Aufwand/Lernkurve/notwendigesWerkzeug
+
+3.4	Das XBee Board, der FS und evtl sogar ein Ventil müssen mit Spannung versorgt werden. Diese Last würde ich am
+	liebsten auf eine Mini-Leistungsplatine auslagern. So kann ich die einzelnen Baugruppen separat ein und aus-
+	schalten. Somit weiß ich wenn der BBB aus ist, ist der Rest ebenso aus. Hier muss ich noch know-how aufbauen.
+	Fragen:
+	3.4.1 	Welche Spannungen werden benötigt:
+		Mini:	1.8 - 5.5 V (etwa 1mA)
+		XBee: 	2.8 - 3.4 V (? mA)
+		FS:	5 V (? mA)
+		Ventil:	? V (? mA)
+
+3.5	Die Spannungsversorgung soll über PV geschehen - was brauche ich:
+		3.5.1	PV-Modul: welche Leistung muss es bringen
+		3.5.2	Laderegelung: eigenes Gerät/über uC?
+		3.5.3	Akku o.ä. => wie lege ich diesen aus z.B. größer als jede benötigte Spannung
+		3.5.4	Stepup/down Wandler
+	
+
+#######################################################################################################################
+## akut ###############################################################################################################
+#######################################################################################################################
+==> 	zu 3 3.1
+	Für den STM Zigbee Controller und Tranceiver muss die Spannungsversorgung
+	und Beschaltung entwickelt werden (kicad wurde bereits installiert
+	Tutorials durcharbeiten)
+
+==> 	2.5 & 3.1 Zigbee:
+	Hier will ich fertige Netzwerk komponenten finden und diese in betrieb nehmen.
+	Fragen:
+	1. Welche topographi will ich (Stern, Baum, Mesh)?
+	2. Ist der Zigbee stack für beide tranceiver verfügbar?
+	3. Wechle zusatz HW brauche ich um den aufbau in betrieb zu nehmen (FTDI usw)
+	4. Wer schaltet wen? lasse ich den uC schlafen, dieser schaltet alles aus und an?
+		Ich könnte den "Slave" Xbee als Router verwenden (immer an) und diesen über
+		funk den uC und den FS an/aus schalten lassen.
+	>>> XBee: dafür habe ich ein sehr gutes tutorial gefunden. SEHR TEUER!!!
+	Scheinbar muss ich die XBee module initial vor-Konfigurieren 
+	>>> STM32 Zigbee modul - noch kein KnowHow. Debuger der STM32F4 Eval 
+		Boards testen. Spannungsversorgung muss erstellt werden.
+
+	Planung:
+	#1. Hello World zum Laufen bringen
+	#2. uC einschlafen und über Timer aufwecken lassen
+	#3. Inputs über Timer lesen lassen (FeuchteSensor)
+	4. Spannungsversorgung autark entwerfen
+	5. Testsystem im Blumentopf anlegen, evtl nur mit blinker
+	6. Serielle Kommunikation erstellen (zu XBee Modul)
+	7. Entwurf von Schaltungselementen um Periferie zu steuern (XBee, FS, evtl Laderegelung)
+
+#######################################################################################################################
+## gelöstes ###########################################################################################################
+#######################################################################################################################
+==> vdd_5v Pin des BBB wird nur versorgt wenn der BBB über die 5V Klinque versorgt wird!
+==> 2.2 Python Skript welches 2 Argumente erhält, prüft und in einem ini-File ablegt
+==> 2.4 mySQL: ich habe auf dem BBB unter ~/Desktop/gardeningSys/mysql_content/tutorial/mysql_tut_TEST.py 
+	alles abgelegt um "beliebig" viele Sensoren anzulegen und mit Zeitstempel zu dokumentieren
+==> 2.4 f MySQL: auf dem BBB unter /var/www/html/php_Tut.php konnte ich über php und java Script die erstellte DB
+	anfragen und deren Daten in einem google-image visualisieren
+==> zu 3: inbetriebnahme des atmega mini ... ein gefrett. jetzt kann ich c files schreiben mit "make" bauen mit 
+	"make load" upladen und mit "make clean" aufräumen
+==> zu 3: habe über einen Transistor eine LED durch den uC schalten lassen
+==> zu 3.2: ich weiß wie ich den uC einschlafen und zyklisch wieder aufwachen 
+	lasse. Ich muss leider einen Kompromiss eingehen da durch das kurze Register
+	die einfache Schlafzeit "sehr kurz" ist. Ich versuche deshalb mit möglichst 
+	wenig Befehlen wieder schlafen zu gehen.
+==> 3.3: ich kann die Flanken des FS über einen Timer zählen, beim overflow toggle 
+	ich eine LED. Evtl muss ich den Eingang noch mit nem Pull-Down beschalten
+==> 3.4: Transistor wird erfolgreich verwendet um den Feuchtesensor an VCC zu legen.
+	Inputs muss ich noch überarbeiten
